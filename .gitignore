@@ -1,0 +1,30 @@
+# Maven
+target/
+*.jar
+*.war
+*.ear
+*.class
+
+# Gradle
+.gradle/
+build/
+*.jar
+*.war
+*.ear
+*.class
+
+# IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+*.class
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Other
+*.log
+*.tmp
