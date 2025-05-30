@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -55,4 +57,8 @@ public class AuthService {
         String jwt = jwtService.generateToken(user);
         return new AuthResponse(jwt);
     }
+
+    public List<User> getAllUsers() {
+    return userRepository.findAll();
+}
 }

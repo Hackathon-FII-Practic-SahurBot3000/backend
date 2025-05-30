@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -32,4 +33,9 @@ public class JwtService {
                 .getBody()
                 .getSubject();
     }
+
+    public boolean isTokenValid(String token, UserDetails userDetails) {
+    final String username = extractEmail(token);
+    return (username.equals(userDetails.getUsername()));
+}
 }
