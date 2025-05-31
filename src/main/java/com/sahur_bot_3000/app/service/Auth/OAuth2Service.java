@@ -1,7 +1,10 @@
 package com.sahur_bot_3000.app.service.Auth;
 
 import com.sahur_bot_3000.app.model.User;
+import com.sahur_bot_3000.app.model.Enums.Role;
 import com.sahur_bot_3000.app.repository.interfaces.UserRepository;
+import com.sahur_bot_3000.app.service.RoleService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class OAuth2Service {
 
     private final UserRepository userRepository;
+    private final RoleService roleService;
 
     public User processOAuth2User(OAuth2User oAuth2User) {
         String email = oAuth2User.getAttribute("email");
@@ -30,21 +34,23 @@ public class OAuth2Service {
         existingUser.setLastName(lastName);
         existingUser.setProfilePictureUrl(profilePictureUrl);
         existingUser.setGoogleAccount(true);
-        
+
         return userRepository.save(existingUser);
     }
 
     private User createNewUser(String email, String firstName, String lastName, String profilePictureUrl) {
+        Role role = roleService.determineRoleFromEmail(email);
+
         User newUser = User.builder()
                 .email(email)
                 .firstName(firstName)
                 .lastName(lastName)
                 .profilePictureUrl(profilePictureUrl)
                 .googleAccount(true)
-                .userType(User.UserType.basic)
+                .role(role)
                 .password(null) // No password for OAuth2 users
                 .build();
 
         return userRepository.save(newUser);
     }
-} 
+}

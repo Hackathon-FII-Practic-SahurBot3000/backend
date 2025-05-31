@@ -2,10 +2,11 @@ package com.sahur_bot_3000.app.service.Auth;
 
 import com.sahur_bot_3000.app.dto.AuthRequest;
 import com.sahur_bot_3000.app.dto.AuthResponse;
-import com.sahur_bot_3000.app.dto.GoogleAuthRequest;
 import com.sahur_bot_3000.app.model.Enums.Role;
 import com.sahur_bot_3000.app.model.User;
 import com.sahur_bot_3000.app.repository.interfaces.UserRepository;
+import com.sahur_bot_3000.app.service.RoleService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,12 +22,12 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
-    private final GoogleTokenVerifier googleTokenVerifier;
+    private final RoleService roleService;
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     public AuthResponse register(AuthRequest request) {
         String email = request.getEmail();
-        Role role = determineRoleFromEmail(email);
+        Role role = roleService.determineRoleFromEmail(email);
 
         var user = User.builder()
                 .email(email)
@@ -44,9 +45,7 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
-                        request.getPassword()
-                )
-        );
+                        request.getPassword()));
 
         var user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -60,17 +59,7 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    private Role determineRoleFromEmail(String email) {
-        if ( email.endsWith("@asii.com")) {
-            return Role.BUSINESS;
-        }
-        return Role.USER;
-    }
-
     public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-    
         return userRepository.findAll();
     }
 

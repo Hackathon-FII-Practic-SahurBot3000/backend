@@ -48,7 +48,7 @@ public class AuthController {
                 "firstName", user.getFirstName() != null ? user.getFirstName() : "",
                 "lastName", user.getLastName() != null ? user.getLastName() : "",
                 "profilePictureUrl", user.getProfilePictureUrl() != null ? user.getProfilePictureUrl() : "",
-                "userType", user.getUserType(),
+                "role", user.getRole(),
                 "googleAccount", user.isGoogleAccount()
             ));
         }
