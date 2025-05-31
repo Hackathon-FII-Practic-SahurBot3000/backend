@@ -25,7 +25,7 @@ public class AuthService {
     private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     public AuthResponse register(AuthRequest request) {
-        String email = request.getEmail();
+            String email = request.getEmail();
         Role role = determineRoleFromEmail(email);
 
         var user = User.builder()
