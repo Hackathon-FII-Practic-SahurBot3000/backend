@@ -8,7 +8,7 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
 
-# Set active profile to prod to use application-prod.properties
-ENV SPRING_PROFILES_ACTIVE=prod
+# Set active profile to prod and run the application
+ENTRYPOINT ["java", "-Dspring.profiles.active=prod", "-jar", "app.jar"]
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Set active profile to prod t
