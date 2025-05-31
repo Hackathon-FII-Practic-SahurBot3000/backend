@@ -3,7 +3,7 @@ package com.sahur_bot_3000.app.controller;
 import com.sahur_bot_3000.app.dto.AuthRequest;
 import com.sahur_bot_3000.app.dto.AuthResponse;
 import com.sahur_bot_3000.app.dto.GoogleAuthRequest;
-import com.sahur_bot_3000.app.service.AuthService;
+import com.sahur_bot_3000.app.service.Auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import com.sahur_bot_3000.app.model.User;

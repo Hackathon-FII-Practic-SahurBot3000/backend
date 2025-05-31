@@ -1,7 +1,7 @@
-package com.sahur_bot_3000.app.service;
+package com.sahur_bot_3000.app.service.userServices;
 
 import com.sahur_bot_3000.app.model.User;
-import com.sahur_bot_3000.app.repository.UserRepository;
+import com.sahur_bot_3000.app.repository.interfaces.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

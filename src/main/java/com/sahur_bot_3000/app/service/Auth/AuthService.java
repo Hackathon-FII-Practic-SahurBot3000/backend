@@ -1,10 +1,10 @@
-package com.sahur_bot_3000.app.service;
+package com.sahur_bot_3000.app.service.Auth;
 
 import com.sahur_bot_3000.app.dto.AuthRequest;
 import com.sahur_bot_3000.app.dto.AuthResponse;
 import com.sahur_bot_3000.app.dto.GoogleAuthRequest;
 import com.sahur_bot_3000.app.model.User;
-import com.sahur_bot_3000.app.repository.UserRepository;
+import com.sahur_bot_3000.app.repository.interfaces.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

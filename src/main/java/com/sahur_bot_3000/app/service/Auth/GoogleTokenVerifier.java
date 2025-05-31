@@ -1,4 +1,4 @@
-package com.sahur_bot_3000.app.service;
+package com.sahur_bot_3000.app.service.Auth;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

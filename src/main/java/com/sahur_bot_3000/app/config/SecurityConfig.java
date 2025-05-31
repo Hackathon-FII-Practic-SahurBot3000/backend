@@ -1,8 +1,7 @@
 package com.sahur_bot_3000.app.config;
 
 
-import com.sahur_bot_3000.app.config.JwtAuthenticationFilter;
-import com.sahur_bot_3000.app.service.UserDetailsServiceImpl;
+import com.sahur_bot_3000.app.service.userServices.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

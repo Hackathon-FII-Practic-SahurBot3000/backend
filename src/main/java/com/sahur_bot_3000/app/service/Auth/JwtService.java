@@ -1,4 +1,4 @@
-package com.sahur_bot_3000.app.service;
+package com.sahur_bot_3000.app.service.Auth;
 
 import com.sahur_bot_3000.app.model.User;
 import io.jsonwebtoken.Jwts;

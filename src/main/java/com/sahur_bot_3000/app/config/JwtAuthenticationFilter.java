@@ -1,8 +1,8 @@
 package com.sahur_bot_3000.app.config;
 
 
-import com.sahur_bot_3000.app.service.JwtService;
-import com.sahur_bot_3000.app.service.UserDetailsServiceImpl;
+import com.sahur_bot_3000.app.service.Auth.JwtService;
+import com.sahur_bot_3000.app.service.userServices.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
