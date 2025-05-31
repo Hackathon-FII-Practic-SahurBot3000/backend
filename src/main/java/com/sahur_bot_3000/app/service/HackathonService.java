@@ -90,4 +90,24 @@ public class HackathonService {
             .collect(Collectors.toList());
 }
 
+public void updateHackathonStates() {
+    Date now = new Date();
+    List<Hackathon> hackathons = hackathonRepository.findAll();
+
+    for (Hackathon hackathon : hackathons) {
+        if (hackathon.getHackathonState() == HackathonState.Ended) continue;
+
+        long diffMillis = now.getTime() - hackathon.getStartedAt().getTime();
+        long hoursPassed = diffMillis / (1000 * 60 * 60);
+
+        if (hoursPassed >= 96 && hackathon.getHackathonState() != HackathonState.Ended) {
+            hackathon.setHackathonState(HackathonState.Ended);
+            hackathonRepository.save(hackathon);
+        } else if (hoursPassed >= 48 && hackathon.getHackathonState() == HackathonState.Pending) {
+            hackathon.setHackathonState(HackathonState.Ongoing);
+            hackathonRepository.save(hackathon);
+        }
+    }
+}
+
 }
