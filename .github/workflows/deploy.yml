@@ -62,5 +62,9 @@ jobs:
             -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
             -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
             -e SPRING_PROFILES_ACTIVE=prod \
+            -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+            -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+            -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+            -e FRONTEND_URL="${{ secrets.FRONTEND_URL }}" \
             -p 8080:8080 \
             ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
