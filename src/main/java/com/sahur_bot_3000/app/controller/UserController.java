@@ -7,6 +7,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import com.sahur_bot_3000.app.dto.UserDto;
 import com.sahur_bot_3000.app.model.User;
 import com.sahur_bot_3000.app.service.UserService;
 
@@ -20,17 +21,17 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<?> getUserMe(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<UserDto> getUserMe(@AuthenticationPrincipal UserDetails userDetails) {
         try {
             User user = userService.getUserByEmail(userDetails.getUsername());
 
-            Map<String, Object> userInfo = Map.of(
-                    "email", user.getEmail(),
-                    "firstName", user.getFirstName() != null ? user.getFirstName() : "",
-                    "lastName", user.getLastName() != null ? user.getLastName() : "",
-                    "profilePictureUrl", user.getProfilePictureUrl() != null ? user.getProfilePictureUrl() : "",
-                    "role", user.getRole(),
-                    "googleAccount", user.isGoogleAccount());
+            UserDto userInfo = new UserDto(
+                    user.getEmail(),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    user.getProfilePictureUrl(),
+                    user.getRole(),
+                    user.isGoogleAccount());
 
             return new ResponseEntity<>(userInfo, HttpStatus.OK);
 
