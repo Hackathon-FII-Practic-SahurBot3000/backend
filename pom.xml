@@ -67,10 +67,15 @@
             <artifactId>okio-jvm</artifactId>
             <version>3.6.0</version>
         </dependency>
+        <!-- <dependency>
+            <groupId>com.github.aopenai4j</groupId>
+            <artifactId>aopenai4j</artifactId>
+            <version>1.0.0</version>
+        </dependency> -->
         <dependency>
-            <groupId>dev.ai4j</groupId>
-            <artifactId>openai4j</artifactId>
-            <version>0.9.0</version>
+            <groupId>com.theokanning.openai-gpt3-java</groupId>
+            <artifactId>service</artifactId>
+            <version>0.18.2</version>
         </dependency>
 
         <dependency>
