@@ -38,6 +38,15 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
+        build-args: |
+          SPRING_PROFILES_ACTIVE=prod
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
+          FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+          DB_URL=${{ secrets.DB_URL }}
+          DB_USERNAME=${{ secrets.DB_USERNAME }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
         tags: |
           ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
           ${{ env.IMAGE_NAME }}:latest
@@ -56,15 +65,12 @@ jobs:
           docker pull ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
           docker stop backend || true
           docker rm backend || true
+          echo "Starting container..."
           docker run -d \
             --name backend \
-            -e DB_URL="${{ secrets.DB_URL }}" \
-            -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
-            -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
-            -e SPRING_PROFILES_ACTIVE=prod \
-            -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-            -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
-            -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
-            -e FRONTEND_URL="${{ secrets.FRONTEND_URL }}" \
+            --restart unless-stopped \
             -p 8080:8080 \
             ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
+          echo "Container started. Checking logs..."
+          sleep 10
+          docker logs backend --tail=50
