@@ -1,48 +1,17 @@
-name: Build, Push & Deploy on Release
+name: Build & Deploy Spring Boot App
 
 on:
   release:
     types: [published]
-
-env:
-  IMAGE_NAME: ghcr.io/hackathon-fii-practic-sahurbot3000/backend
+  workflow_dispatch:  # Allow manual triggering
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
+    
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Login to GitHub Container Registry
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Extract release tag
-      id: release_tag
-      run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
-
-    - name: Build and push Docker image
-      uses: docker/build-push-action@v5
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: |
-          ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
-          ${{ env.IMAGE_NAME }}:latest
-        # cache-from: type=gha
-        # cache-to: type=gha,mode=max
+      uses: actions/checkout@v4
 
     - name: Deploy to VPS
       uses: appleboy/ssh-action@v1.0.0
@@ -52,16 +21,47 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
-          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-          docker pull ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
-          docker stop backend || true
-          docker rm backend || true
-          echo "Starting container..."
-          docker run -d \
-            --name backend \
-            --restart unless-stopped \
-            -p 8080:8080 \
-            ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
-          echo "Container started. Checking logs..."
+          # Set deployment variables
+          APP_NAME="hackathon-backend"
+          APP_DIR="/opt/$APP_NAME"
+          REPO_URL="https://github.com/hackathon-fii-practic-sahurbot3000/backend.git"
+          BRANCH="main"
+          
+          echo "Starting deployment..."
+          
+          # Create app directory if it doesn't exist
+          sudo mkdir -p $APP_DIR
+          cd $APP_DIR
+          
+          # Clone or update repository
+          if [ -d ".git" ]; then
+            echo "Updating existing repository..."
+            git fetch origin
+            git reset --hard origin/$BRANCH
+            git clean -fd
+          else
+            echo "Cloning repository..."
+            sudo git clone $REPO_URL .
+            git checkout $BRANCH
+          fi
+          
+          # Make deploy script executable
+          chmod +x scripts/deploy.sh
+          
+          # Run deployment script
+          ./scripts/deploy.sh
+          
+          echo "Deployment completed!"
+          
+          # Show service status
+          echo "=== Service Status ==="
+          sudo systemctl is-active $APP_NAME || true
+          
+          # Show recent logs
+          echo "=== Recent Logs ==="
+          sudo journalctl -u $APP_NAME --no-pager --lines=20 || true
+          
+          # Test health endpoint
+          echo "=== Health Check ==="
           sleep 10
-          docker logs backend --tail=50
+          curl -f http://localhost:8080/actuator/health || echo "Health check failed"
