@@ -1,61 +1,71 @@
-name: Build and Deploy to VPS
+name: Build, Push & Deploy on Release
 
 on:
   push:
     branches:
       - feature/fix-google-auth
 
+env:
+  IMAGE_NAME: ghcr.io/hackathon-fii-practic-sahurbot3000/backend
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set lowercase repo name
-        id: vars
-        run: echo "REPO_LC=${GITHUB_REPOSITORY,,}" >> $GITHUB_OUTPUT
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Login to GHCR
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Extract release tag
+      id: release_tag
+      run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/${{ steps.vars.outputs.REPO_LC }}:latest
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: |
+          ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
+          ${{ env.IMAGE_NAME }}:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
-      - name: Deploy to VPS via SSH
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: |
-            docker pull ghcr.io/${{ steps.vars.outputs.REPO_LC }}:latest
-
-            docker stop myapp || true
-            docker rm myapp || true
-
-            docker run -d \
-              --name myapp \
-              -p 8080:8080 \
-              -e SPRING_PROFILES_ACTIVE=prod \
-              -e DB_URL="${{ secrets.DB_URL }}" \
-              -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
-              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
-              -e FRONTEND_URL="${{ secrets.FRONTEND_URL }}" \
-              -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
-              -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
-              -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-              ghcr.io/${{ steps.vars.outputs.REPO_LC }}:latest
+    - name: Deploy to VPS
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        script: |
+          docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
+          docker pull ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
+          docker stop backend || true
+          docker rm backend || true
+          docker run -d \
+            --name backend \
+            -e DB_URL="${{ secrets.DB_URL }}" \
+            -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
+            -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+            -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+            -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+            -e FRONTEND_URL="${{ secrets.FRONTEND_URL }}" \
+            -e SPRING_PROFILES_ACTIVE=prod \
+            -p 8080:8080 \
+            ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
