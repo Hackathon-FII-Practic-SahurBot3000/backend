@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "hackathon_teams")
 @Data
@@ -15,14 +17,24 @@ import lombok.NoArgsConstructor;
 public class HackathonTeam {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id")
-    private Team team;
+    public Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "hackathon_id")
-    private Hackathon hackathon;
+    public Hackathon hackathon;
+
+    public String urlSubmission;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn (name="team_id")
+    public List<TeamMember> teamMembers;
+
+    public String teamName;
+
+    @OneToMany(mappedBy = "voterTeam")
+    private List<Vote> votesGiven;
+
+    @OneToMany(mappedBy = "votedTeam")
+    private List<Vote> votesReceived;
 }
 

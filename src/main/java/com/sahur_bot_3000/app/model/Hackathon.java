@@ -29,11 +29,17 @@ public class Hackathon {
     public Date startedAt;
     public Date endedAt;
 
+    public HackathonState hackathonState;
+
     @OneToMany(mappedBy = "hackathon")
     public List<HackathonTeam> hackathonTeams;
+
 }
 
 enum HackathonType {
     Writing, Audio, Art, Business
 }
 
+enum HackathonState {
+    Pending, Ongoing, Ended
+}

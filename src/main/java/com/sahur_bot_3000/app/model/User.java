@@ -23,6 +23,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String profilePictureUrl;
+    public UserType userType;
 
     @Column(name = "google_account", nullable = false)
     public boolean googleAccount;
@@ -30,15 +31,13 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Link> links;
 
-    @OneToMany(mappedBy = "user")
-    private List<Upload> uploads;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TeamMember> teamMember;
 
-    @OneToMany(mappedBy = "user")
-    private List<Submission> submissions;
 
-    @OneToMany(mappedBy = "user")
-    private List<TeamParticipant> teamParticipants;
+    enum UserType {
+       business,admin, basic
+    }
 
-    @OneToMany(mappedBy = "user")
-    private List<Vote> votes;
+
 }

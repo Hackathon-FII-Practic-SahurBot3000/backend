@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(name = "votes")
 @Data
@@ -17,12 +19,13 @@ public class Vote {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToOne
+    @JoinColumn(name = "voted_team_id", nullable = false)
+    private HackathonTeam votedTeam;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "submission_id")
-    private Submission submission;
+    @ManyToOne
+    @JoinColumn(name = "voter_team_id", nullable = false)
+    private HackathonTeam voterTeam;
+
 }
 
