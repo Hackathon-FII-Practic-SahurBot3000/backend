@@ -3,7 +3,7 @@ name: Build and Deploy to VPS
 on:
   push:
     branches:
-      - main
+      - feature/fix-google-auth
 
 jobs:
   build-and-deploy:
