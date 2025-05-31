@@ -1,5 +1,6 @@
 package com.sahur_bot_3000.app.model;
 
+import com.sahur_bot_3000.app.model.Enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,7 +24,10 @@ public class User {
     private String firstName;
     private String lastName;
     private String profilePictureUrl;
-    public UserType userType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
     @Column(name = "google_account", nullable = false)
     public boolean googleAccount;
@@ -34,10 +38,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> teamMember;
 
-
     public enum UserType {
        business,admin, basic
     }
-
-
 }
