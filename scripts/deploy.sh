@@ -35,22 +35,41 @@ if ! command -v mvn &> /dev/null; then
     sudo apt install -y maven
 fi
 
-# Change to application directory
-cd $APP_DIR
+# Ensure we're in the correct directory
+echo "Working directory: $(pwd)"
+if [ ! -f "pom.xml" ]; then
+    echo "Error: pom.xml not found. Make sure you're in the project root directory."
+    echo "Contents of current directory:"
+    ls -la
+    exit 1
+fi
 
 # Remove old JAR if exists
-sudo rm -f *.jar
+echo "Cleaning old JAR files..."
+sudo rm -f $APP_DIR/*.jar
 
 # Build the application
 echo "Building application..."
 mvn clean package -DskipTests
 
+# Check if JAR was created
+if [ ! -f "target/$JAR_NAME" ]; then
+    echo "Error: JAR file not found at target/$JAR_NAME"
+    echo "Contents of target directory:"
+    ls -la target/ || echo "Target directory not found"
+    exit 1
+fi
+
 # Copy the JAR to the app directory
+echo "Copying JAR to application directory..."
 sudo cp target/$JAR_NAME $APP_DIR/
 
 # Set permissions
 sudo chown -R $USER:$USER $APP_DIR
 sudo chmod +x $APP_DIR/$JAR_NAME
+
+echo "JAR file deployed: $APP_DIR/$JAR_NAME"
+echo "JAR file size: $(ls -lh $APP_DIR/$JAR_NAME | awk '{print $5}')"
 
 # Create systemd service file
 echo "Creating systemd service..."
@@ -97,15 +116,42 @@ sudo systemctl daemon-reload
 
 # Enable and start the service
 sudo systemctl enable $SERVICE_NAME
+echo "Starting $SERVICE_NAME service..."
 sudo systemctl start $SERVICE_NAME
 
+# Wait a moment for the service to start
+sleep 3
+
 echo "Deployment completed successfully!"
-echo "Service status:"
-sudo systemctl status $SERVICE_NAME --no-pager
+echo ""
+echo "=== Service Status ==="
+sudo systemctl status $SERVICE_NAME --no-pager || true
 
-echo "Checking application logs (last 20 lines):"
-sleep 5
-sudo tail -n 20 $LOG_DIR/app.log || echo "Log file not yet available"
+echo ""
+echo "=== Checking if application is responding ==="
+for i in {1..6}; do
+    echo "Attempt $i/6: Checking application startup..."
+    if curl -f -s http://localhost:8080/actuator/health >/dev/null 2>&1; then
+        echo "✅ Application is responding!"
+        break
+    else
+        if [ $i -eq 6 ]; then
+            echo "⚠️  Application may still be starting up..."
+        else
+            sleep 5
+        fi
+    fi
+done
 
-echo "Application should be available at: http://localhost:8080"
-echo "Health check: http://localhost:8080/actuator/health" 
+echo ""
+echo "=== Recent Application Logs ==="
+sudo tail -n 15 $LOG_DIR/app.log 2>/dev/null || echo "Log file not yet available"
+
+echo ""
+echo "Application endpoints:"
+echo "- Health check: http://localhost:8080/actuator/health"
+echo "- API Documentation: http://localhost:8080/swagger-ui"
+echo "- Application logs: $LOG_DIR/app.log"
+echo ""
+echo "Use './scripts/manage.sh status' to check service status"
+echo "Use './scripts/manage.sh logs' to view recent logs" 
