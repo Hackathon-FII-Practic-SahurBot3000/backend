@@ -23,30 +23,30 @@ public class HackathonService {
     private final HackathonRepository hackathonRepository;
     private final UserRepository userRepository;
 
-    public HackathonResponse createHackathon(HackathonRequest request, String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+public HackathonResponse createHackathon(HackathonRequest request, String email) {
+    User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (user.getRole() != Role.BUSINESS) {
-            throw new RuntimeException("Only BUSINESS users can create hackathons.");
-        }
-
-        Date now = new Date();
-        Date end = new Date(now.getTime() + 48 * 60 * 60 * 1000); // +48h
-
-        Hackathon hackathon = Hackathon.builder()
-                .name(request.getName())
-                .description(request.getDescription())
-                .type(request.getType())
-                .startedAt(now)
-                .endedAt(end)
-                .hackathonState(HackathonState.Pending)
-                .build();
-
-        hackathonRepository.save(hackathon);
-
-        return mapToResponse(hackathon);
+    if (user.getRole() != Role.BUSINESS) {
+        throw new RuntimeException("Only BUSINESS users can create hackathons.");
     }
+
+    Hackathon hackathon = Hackathon.builder()
+            .name(request.getName())
+            .description(request.getDescription())
+            .type(request.getType())
+            .prizes(request.getPrizes())
+            .pendingAt(request.getPendingAt())
+            .startedAt(request.getStartedAt())
+            .votingAt(request.getVotingAt())
+            .endedAt(request.getEndedAt())
+            .hackathonState(HackathonState.Pending)
+            .createdBy(user)
+            .build();
+
+    hackathonRepository.save(hackathon);
+    return mapToResponse(hackathon);
+}
 
     public List<HackathonResponse> getAllHackathons() {
         return hackathonRepository.findAll().stream()

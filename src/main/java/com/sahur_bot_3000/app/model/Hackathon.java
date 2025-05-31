@@ -29,14 +29,18 @@ public class Hackathon {
 
     public String name;
     public String description;
+    public String prize;
 
-    public Date startedAt;
-    public Date endedAt;
+    private Date pendingAt;
+    private Date startedAt;
+    private Date votingAt;
+    private Date endedAt;
 
-    public HackathonState hackathonState;
+    @Enumerated(EnumType.STRING)
+    private HackathonState hackathonState;
 
     @OneToMany(mappedBy = "hackathon")
-    public List<HackathonTeam> hackathonTeams;
+    private List<HackathonTeam> hackathonTeams;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
