@@ -1,5 +1,7 @@
 package com.sahur_bot_3000.app.model;
 
+import com.sahur_bot_3000.app.model.Enums.HackathonState;
+import com.sahur_bot_3000.app.model.Enums.HackathonType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +23,9 @@ public class Hackathon {
     public Long id;
 
     @Enumerated(EnumType.STRING)
-    public HackathonType type;
+    @Column(name = "type")
+    private HackathonType type;
+
 
     public String name;
     public String description;
@@ -34,12 +38,9 @@ public class Hackathon {
     @OneToMany(mappedBy = "hackathon")
     public List<HackathonTeam> hackathonTeams;
 
-}
+    @ManyToOne
+    @JoinColumn(name = "created_by")
+    private User createdBy;
 
-enum HackathonType {
-    Writing, Audio, Art, Business
-}
 
-enum HackathonState {
-    Pending, Ongoing, Ended
 }
