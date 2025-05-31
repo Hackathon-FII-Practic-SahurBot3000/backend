@@ -21,8 +21,9 @@ public class TeamMember {
     @JoinColumn(name = "team_id")
     public HackathonTeam team;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id")
-    public User user;
+    private User user;
+
 }
 

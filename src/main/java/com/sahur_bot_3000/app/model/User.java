@@ -31,6 +31,7 @@ public class User {
     private List<Link> links;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HackathonTeam> hackathonTeams;
+    private List<TeamMember> teamMember;
+
 
 }
