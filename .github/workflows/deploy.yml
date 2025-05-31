@@ -29,19 +29,13 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract release tag
-      id: release_tag
-      run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
-
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         file: ./Dockerfile
         push: true
-        tags: |
-          ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
-          ${{ env.IMAGE_NAME }}:latest
+        tags: ${{ env.IMAGE_NAME }}:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -54,7 +48,7 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
           docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-          docker pull ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
+          docker pull ${{ env.IMAGE_NAME }}:latest
           docker stop backend || true
           docker rm backend || true
           docker run -d \
@@ -68,4 +62,4 @@ jobs:
             -e FRONTEND_URL="${{ secrets.FRONTEND_URL }}" \
             -e SPRING_PROFILES_ACTIVE=prod \
             -p 8080:8080 \
-            ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
+            ${{ env.IMAGE_NAME }}:latest
