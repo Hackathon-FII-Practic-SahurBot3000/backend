@@ -54,6 +54,7 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         port: 22
         script: |
+          docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
           docker pull ${{ env.REGISTRY }}/${{ steps.prep.outputs.IMAGE_NAME }}:latest
           docker stop springapp || true
           docker rm springapp || true
