@@ -10,3 +10,4 @@ import java.util.List;
 public interface HackathonRepository extends JpaRepository<Hackathon, Long> {
     List<Hackathon> findByHackathonState(HackathonState state);
 }
+ 
