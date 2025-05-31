@@ -49,11 +49,19 @@ jobs:
         script: |
           docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
           docker pull ${{ env.IMAGE_NAME }}:latest
+          
+          # Create network if it doesn't exist
+          docker network create hackathon-network || true
+          
+          # Stop and remove existing backend container
           docker stop backend || true
           docker rm backend || true
+          
+          # Run backend container connected to the same network as postgres
           docker run -d \
             --name backend \
-            -e DB_URL="${{ secrets.DB_URL }}" \
+            --network hackathon-network \
+            -e DB_URL="jdbc:postgresql://postgres:5432/hackathon-fiipractic" \
             -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
             -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
             -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
