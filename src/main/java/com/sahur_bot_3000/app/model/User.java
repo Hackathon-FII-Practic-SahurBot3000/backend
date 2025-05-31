@@ -23,6 +23,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String profilePictureUrl;
+    public UserType userType;
 
     @Column(name = "google_account", nullable = false)
     public boolean googleAccount;
@@ -32,6 +33,11 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TeamMember> teamMember;
+
+
+    enum UserType {
+       business,admin, basic
+    }
 
 
 }
