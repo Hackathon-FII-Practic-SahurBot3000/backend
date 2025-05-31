@@ -3,6 +3,8 @@ package com.sahur_bot_3000.app.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "users")
 @Data
@@ -12,13 +14,31 @@ import lombok.*;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public Long id;
 
     @Column(unique = true)
-    private String email;
+    public String email;
 
-    private String password;
+    public String password;
+    private String firstName;
+    private String lastName;
+    private String profilePictureUrl;
 
     @Column(name = "google_account", nullable = false)
-    private boolean googleAccount;
+    public boolean googleAccount;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Link> links;
+
+    @OneToMany(mappedBy = "user")
+    private List<Upload> uploads;
+
+    @OneToMany(mappedBy = "user")
+    private List<Submission> submissions;
+
+    @OneToMany(mappedBy = "user")
+    private List<TeamParticipant> teamParticipants;
+
+    @OneToMany(mappedBy = "user")
+    private List<Vote> votes;
 }
