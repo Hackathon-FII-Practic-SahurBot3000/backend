@@ -1,0 +1,3 @@
+{
+  "java.debug.settings.vmArgs": "-Dspring.profiles.active=local"
+}

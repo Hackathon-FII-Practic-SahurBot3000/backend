@@ -35,7 +35,7 @@ public class User {
     private List<TeamMember> teamMember;
 
 
-    enum UserType {
+    public enum UserType {
        business,admin, basic
     }
 
