@@ -38,15 +38,6 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        build-args: |
-          SPRING_PROFILES_ACTIVE=prod
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}
-          FRONTEND_URL=${{ secrets.FRONTEND_URL }}
-          DB_URL=${{ secrets.DB_URL }}
-          DB_USERNAME=${{ secrets.DB_USERNAME }}
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
         tags: |
           ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
           ${{ env.IMAGE_NAME }}:latest
