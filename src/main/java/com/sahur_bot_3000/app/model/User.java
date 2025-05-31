@@ -30,15 +30,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Link> links;
 
-    @OneToMany(mappedBy = "user")
-    private List<Upload> uploads;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<HackathonTeam> hackathonTeams;
 
-    @OneToMany(mappedBy = "user")
-    private List<Submission> submissions;
-
-    @OneToMany(mappedBy = "user")
-    private List<TeamParticipant> teamParticipants;
-
-    @OneToMany(mappedBy = "user")
-    private List<Vote> votes;
 }
