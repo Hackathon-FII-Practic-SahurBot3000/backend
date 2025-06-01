@@ -1,5 +1,9 @@
 package com.sahur_bot_3000.app.aiModel;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -10,12 +14,13 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/ai")
+@RequiredArgsConstructor
 public class AiImageAnalyzerController {
 
-    private static final String PYTHON_SCRIPT = "E:/backend/src/main/java/com/sahur_bot_3000/app/aiModel/run_inference.py";
+    private static final String PYTHON_SCRIPT = "E:/backend/src/main/java/com/sahur_bot_3000/app/aiModel/analyze_image.py";
 
     @PostMapping("/predict")
-    public ResponseEntity<Map<String, Double>> analyzeImage(@RequestParam("image") MultipartFile file) {
+    public ResponseEntity<PredictionResponse> analyzeImage(@RequestParam("image") MultipartFile file) {
         try {
             Path tempFile = Files.createTempFile("upload_", ".jpg");
             Files.write(tempFile, file.getBytes());
@@ -32,30 +37,30 @@ public class AiImageAnalyzerController {
             }
 
             int exitCode = process.waitFor();
-            Files.delete(tempFile);
+            Files.deleteIfExists(tempFile);
 
             if (exitCode != 0) {
-                throw new RuntimeException("Python script exited with code " + exitCode);
+                throw new RuntimeException("Scriptul Python a eșuat cu codul: " + exitCode);
             }
 
-            String jsonOutput = outputBuilder.toString();
-            Map<String, Double> result = parseJsonOutput(jsonOutput);
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> resultMap = objectMapper.readValue(
+                    outputBuilder.toString(),
+                    new TypeReference<>() {}
+            );
 
-            return ResponseEntity.ok(result);
+            PredictionResponse response = new PredictionResponse(
+                    (String) resultMap.get("result"),
+                    (String) resultMap.get("heatmap_base64"),
+                    (String) resultMap.get("image_id"),
+                    (String) resultMap.get("explanation")
+            );
+
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.internalServerError().body(Map.of("error", -1.0));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-    }
-
-    private Map<String, Double> parseJsonOutput(String json) {
-        Map<String, Double> result = new HashMap<>();
-        json = json.replaceAll("[{}\"]", "");
-        for (String pair : json.split(",")) {
-            String[] kv = pair.split(":");
-            result.put(kv[0].trim(), Double.parseDouble(kv[1].trim()));
-        }
-        return result;
     }
 }
