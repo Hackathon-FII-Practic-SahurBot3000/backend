@@ -14,7 +14,7 @@ public class AiImageAnalyzerController {
 
     private static final String PYTHON_SCRIPT = "E:/backend/src/main/java/com/sahur_bot_3000/app/aiModel/run_inference.py";
 
-    @PostMapping("/analyze")
+    @PostMapping("/predict")
     public ResponseEntity<Map<String, Double>> analyzeImage(@RequestParam("image") MultipartFile file) {
         try {
             Path tempFile = Files.createTempFile("upload_", ".jpg");
