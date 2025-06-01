@@ -26,7 +26,7 @@ public class HackathonService {
 
     @Transactional
     public HackathonResponse createHackathon(HackathonCreateRequest request, User businessUser) {
-        if (businessUser.getRole() != Role.BUSINESS) {
+        if (businessUser == null || businessUser.getRole() != Role.BUSINESS) {
             throw new IllegalArgumentException("Only business accounts can create hackathons");
         }
 
@@ -38,6 +38,7 @@ public class HackathonService {
                 .startedAt(request.getStartedAt())
                 .endedAt(request.getEndedAt())
                 .prize(request.getPrize())
+                .createdBy(businessUser)
                 .build();
 
         hackathon = hackathonRepository.save(hackathon);
@@ -47,7 +48,7 @@ public class HackathonService {
     public HackathonResponse getHackathonById(Long id, Long userId) {
         Hackathon hackathon = hackathonRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Hackathon not found with id: " + id));
-        
+
         boolean isParticipating = isUserParticipating(hackathon.getId(), userId);
         return mapToResponse(hackathon, isParticipating);
     }
