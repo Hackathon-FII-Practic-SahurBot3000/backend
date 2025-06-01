@@ -33,6 +33,8 @@ public class Hackathon {
     public Date startedAt;
     public Date endedAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "hackathon_state")
     public HackathonState hackathonState;
 
     @OneToMany(mappedBy = "hackathon")
