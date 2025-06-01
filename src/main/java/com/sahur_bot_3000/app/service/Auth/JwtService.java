@@ -24,8 +24,8 @@ public class JwtService {
     private long jwtExpiration;
 
     private SecretKey getSigningKey() {
-        byte[] keyBytes = java.util.Base64.getDecoder().decode(jwtSecret);
-        return Keys.hmacShaKeyFor(keyBytes);
+        byte[] decodedKey = java.util.Base64.getDecoder().decode(jwtSecret);
+        return Keys.hmacShaKeyFor(decodedKey);
     }
 
     public String generateToken(User user) {
