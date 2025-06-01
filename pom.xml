@@ -67,6 +67,12 @@
             <artifactId>okio-jvm</artifactId>
             <version>3.6.0</version>
         </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.15</version>
+        </dependency>
+
         <!-- <dependency>
             <groupId>com.github.aopenai4j</groupId>
             <artifactId>aopenai4j</artifactId>

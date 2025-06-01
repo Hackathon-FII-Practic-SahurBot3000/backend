@@ -26,7 +26,7 @@ public class HackathonScheduler {
     private int lastIndex = -1;
 
     //    @Scheduled(cron = "0 0 0 * * *")
-    @Scheduled(cron = "0 */5 * * * *") // la fiecare 5 minute
+    @Scheduled(cron = "0 */5 * * * *")
     @Transactional
     public void generateOneHackathon() {
         HackathonType[] types = HackathonType.values();
@@ -85,7 +85,7 @@ public class HackathonScheduler {
         }
     }
 
-    @Scheduled(fixedRate = 60 * 60 * 1000) // Runs every hour
+    @Scheduled(fixedRate = 60 * 60 * 1000)
     @Transactional
     public void updateHackathonStates() {
         log.info("Starting hackathon state update");
