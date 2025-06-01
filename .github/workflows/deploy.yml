@@ -3,7 +3,7 @@ name: Build, Push & Deploy on Release
 on:
   push:
     branches:
-      - feature/fix-google-auth
+      - main
 
 env:
   IMAGE_NAME: ghcr.io/hackathon-fii-practic-sahurbot3000/backend
