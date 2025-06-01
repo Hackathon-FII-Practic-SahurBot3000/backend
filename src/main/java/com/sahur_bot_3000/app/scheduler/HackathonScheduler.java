@@ -23,53 +23,66 @@ import java.util.List;
 public class HackathonScheduler {
     private final HackathonRepository hackathonRepository;
     private final AiService aiService;
+    private int lastIndex = -1;
 
-//    @Scheduled(cron = "0 0 0 * * *")
-    @Scheduled(cron = "0 */5 * * * *")
+    //    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 */5 * * * *") // la fiecare 5 minute
     @Transactional
-    public void generateDailyHackathons() {
-        log.info("Starting daily hackathon generation");
+    public void generateOneHackathon() {
+        HackathonType[] types = HackathonType.values();
+        lastIndex = (lastIndex + 1) % types.length;
+        HackathonType type = types[lastIndex];
 
-        Arrays.stream(HackathonType.values()).forEach(type -> {
-            try {
-                String prompt = String.format("""
-                        Generate an interesting theme for a %s hackathon.
-                        Return only the title and an interesting description of 2-3 lines that is captivating and gives participants freedom to create something diverse and interesting, separated by `||`.
-                        Ex: "Theme Name" || "Short description"
-                        """, type.name());
+        log.info("Generating hackathon for type: {}", type);
 
-                String response = aiService.generateResponse(prompt);
-                String[] parts = response.split("\\|\\|");
+        try {
+            String prompt = String.format("""
+                    Generate an interesting theme for a %s hackathon.
+                    Return only the title and a short description (2-3 lines), separated by `||`.
+                    Ex: "Theme Name" || "Short description"
+                    """, type.name());
 
-                if (parts.length != 2) {
-                    log.error("Invalid response format for type {}: {}", type, response);
-                    return;
-                }
+            String response = aiService.generateResponse(prompt);
 
-                String name = parts[0].trim();
-                String description = parts[1].trim();
+            String[] lines = response.split("\n");
+            String firstValidLine = Arrays.stream(lines)
+                    .filter(line -> line.contains("||"))
+                    .findFirst()
+                    .orElse(null);
 
-                LocalDateTime startTime = LocalDateTime.now().plusDays(1);
-                LocalDateTime endTime = LocalDateTime.now().plusDays(8);
-
-                Hackathon hackathon = Hackathon.builder()
-                        .name(name)
-                        .description(description)
-                        .type(type)
-                        .hackathonState(HackathonState.Pending)
-                        .startedAt(Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()))
-                        .endedAt(Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant()))
-                        .prize("poll")  // Prize is determined by poll
-                        .build();
-
-                hackathonRepository.save(hackathon);
-                log.info("Created new hackathon: {} of type {}", name, type);
-            } catch (Exception e) {
-                log.error("Error generating hackathon for type {}: {}", type, e.getMessage());
+            if (firstValidLine == null) {
+                log.error("No valid theme for type {}: {}", type, response);
+                return;
             }
-        });
 
-        log.info("Finished daily hackathon generation");
+            String[] parts = firstValidLine.split("\\|\\|");
+            if (parts.length != 2) {
+                log.error("Invalid theme format for type {}: {}", type, firstValidLine);
+                return;
+            }
+
+            String name = parts[0].trim();
+            String description = parts[1].trim();
+
+            LocalDateTime startTime = LocalDateTime.now().plusDays(1);
+            LocalDateTime endTime = LocalDateTime.now().plusDays(8);
+
+            Hackathon hackathon = Hackathon.builder()
+                    .name(name)
+                    .description(description)
+                    .type(type)
+                    .hackathonState(HackathonState.Pending)
+                    .startedAt(Date.from(startTime.atZone(ZoneId.systemDefault()).toInstant()))
+                    .endedAt(Date.from(endTime.atZone(ZoneId.systemDefault()).toInstant()))
+                    .prize("poll")
+                    .build();
+
+            hackathonRepository.save(hackathon);
+            log.info("Created hackathon: {} of type {}", name, type);
+
+        } catch (Exception e) {
+            log.error("Failed to generate hackathon for {}: {}", type, e.getMessage());
+        }
     }
 
     @Scheduled(fixedRate = 60 * 60 * 1000) // Runs every hour
