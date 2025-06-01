@@ -17,4 +17,6 @@ public class HackathonResponse {
     private HackathonState hackathonState;
     private Date startedAt;
     private Date endedAt;
+    private String prize;
+    private boolean isParticipating;
 }

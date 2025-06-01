@@ -20,7 +20,7 @@ public class HackathonTeam {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "hackathon_id")
     public Hackathon hackathon;
 
@@ -35,13 +35,13 @@ public class HackathonTeam {
 
     @OneToMany(mappedBy = "voterTeam")
     @Builder.Default
-    private List<Vote> votesGiven = new ArrayList<>();
+    public List<Vote> votesGiven = new ArrayList<>();
 
     @OneToMany(mappedBy = "votedTeam")
     @Builder.Default
-    private List<Vote> votesReceived = new ArrayList<>();
+    public List<Vote> votesReceived = new ArrayList<>();
 
     @Column(name = "is_joined", nullable = false)
-    private boolean isJoined;
+    public boolean isJoined;
 }
 

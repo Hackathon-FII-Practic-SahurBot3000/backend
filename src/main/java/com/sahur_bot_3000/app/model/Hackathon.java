@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "hackathons")
+@Table(name = "hackathon")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -24,25 +24,26 @@ public class Hackathon {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private HackathonType type;
+    public HackathonType type;
 
 
     public String name;
     public String description;
+    public String prize;
 
+    public Date pendingAt;
     public Date startedAt;
+    public Date votingAt;
     public Date endedAt;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "hackathon_state")
     public HackathonState hackathonState;
 
     @OneToMany(mappedBy = "hackathon")
-    public List<HackathonTeam> hackathonTeams;
+    private List<HackathonTeam> hackathonTeams;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
-    private User createdBy;
-
+    public User createdBy;
 
 }
