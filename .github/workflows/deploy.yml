@@ -61,7 +61,7 @@ jobs:
           docker run -d \
             --name backend \
             --network hackathon-network \
-            -e DB_URL="jdbc:postgresql://postgres:5432/hackathon-fiipractic" \
+            -e DB_URL="jdbc:postgresql://postgres:5432/hackathon-fiipractic-prod" \
             -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
             -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
             -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
