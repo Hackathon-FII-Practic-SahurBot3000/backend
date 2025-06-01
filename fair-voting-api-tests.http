@@ -1,0 +1,55 @@
+### Fair Voting System API Tests
+### Use this file with VS Code REST Client extension or import into Postman
+
+@baseUrl = http://localhost:8080
+
+### Health Check
+GET {{baseUrl}}/api/test/health
+
+### Quick Demo - Test with 8 teams (creates data, generates clusters, analyzes fairness)
+GET {{baseUrl}}/api/test/quick-demo/8
+
+### Create test data with 6 teams
+POST {{baseUrl}}/api/test/seed-data/6
+
+### Create multiple test scenarios (2, 4, 8, 12 teams)
+POST {{baseUrl}}/api/test/seed-multiple-scenarios
+
+### Test edge cases automatically
+POST {{baseUrl}}/api/test/test-edge-cases
+
+### Generate fair voting clusters (replace hackathonId with actual ID)
+POST {{baseUrl}}/api/fair-voting/generate-clusters
+Content-Type: application/json
+
+{
+  "hackathonId": 1,
+  "teamsPerCluster": 3,
+  "candidatesPerCluster": 2
+}
+
+### Analyze fairness for hackathon (replace 1 with actual hackathon ID)
+GET {{baseUrl}}/api/fair-voting/analyze/1
+
+### Get voting clusters for hackathon (replace 1 with actual hackathon ID)
+GET {{baseUrl}}/api/fair-voting/clusters/1
+
+### Run full test with custom parameters (replace hackathonId)
+POST {{baseUrl}}/api/test/run-full-test/1?teamsPerCluster=3&candidatesPerCluster=2
+
+### View test data summary
+GET {{baseUrl}}/api/test/data-summary
+
+### Clean up all test data
+DELETE {{baseUrl}}/api/test/cleanup
+
+### Test different team counts
+GET {{baseUrl}}/api/test/quick-demo/2
+###
+GET {{baseUrl}}/api/test/quick-demo/4
+###
+GET {{baseUrl}}/api/test/quick-demo/7
+###
+GET {{baseUrl}}/api/test/quick-demo/12
+###
+GET {{baseUrl}}/api/test/quick-demo/20 
