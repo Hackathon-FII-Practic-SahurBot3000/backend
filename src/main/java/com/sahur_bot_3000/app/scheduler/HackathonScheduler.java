@@ -24,7 +24,8 @@ public class HackathonScheduler {
     private final HackathonRepository hackathonRepository;
     private final AiService aiService;
 
-    @Scheduled(cron = "0 0 0 * * *")
+//    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 */5 * * * *")
     @Transactional
     public void generateDailyHackathons() {
         log.info("Starting daily hackathon generation");
@@ -96,4 +97,6 @@ public class HackathonScheduler {
         }
         log.info("Finished hackathon state update");
     }
+
+
 }

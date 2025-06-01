@@ -21,25 +21,25 @@ public class User {
     public String email;
 
     public String password;
-    private String firstName;
-    private String lastName;
-    private String profilePictureUrl;
+    public String firstName;
+    public String lastName;
+    public String profilePictureUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role;
+    public Role role;
 
     @Column(name = "google_account", nullable = false)
     public boolean googleAccount;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Link> links;
+    public List<Link> links;
 
     @OneToMany(mappedBy = "user")
-    private List<TeamMember> teamMembers;
+    public List<TeamMember> teamMembers;
 
     @OneToMany(mappedBy = "createdBy")
-    private List<Hackathon> createdHackathons;
+    public List<Hackathon> createdHackathons;
     
     public enum UserType {
        business,admin, basic

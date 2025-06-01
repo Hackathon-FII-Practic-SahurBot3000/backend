@@ -24,27 +24,26 @@ public class Hackathon {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private HackathonType type;
+    public HackathonType type;
 
 
     public String name;
     public String description;
     public String prize;
 
-    private Date pendingAt;
-    private Date startedAt;
-    private Date votingAt;
-    private Date endedAt;
+    public Date pendingAt;
+    public Date startedAt;
+    public Date votingAt;
+    public Date endedAt;
 
     @Enumerated(EnumType.STRING)
-    private HackathonState hackathonState;
+    public HackathonState hackathonState;
 
     @OneToMany(mappedBy = "hackathon")
     private List<HackathonTeam> hackathonTeams;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
-    private User createdBy;
-
+    public User createdBy;
 
 }

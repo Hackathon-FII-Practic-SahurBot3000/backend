@@ -17,15 +17,15 @@ import java.util.List;
 public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    public Long id;
 
     @ManyToOne
     @JoinColumn(name = "voted_team_id", nullable = false)
-    private HackathonTeam votedTeam;
+    public HackathonTeam votedTeam;
 
     @ManyToOne
     @JoinColumn(name = "voter_team_id", nullable = false)
-    private HackathonTeam voterTeam;
+    public HackathonTeam voterTeam;
 
 }
 
