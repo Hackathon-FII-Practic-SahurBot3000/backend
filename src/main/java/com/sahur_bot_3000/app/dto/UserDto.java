@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserDto {
+    @NotBlank(message = "Id is mandatory")
+    private Long id;
+
     @NotBlank(message = "Email is mandatory")
     @Email(message = "Email should be valid")
     private String email;
@@ -27,5 +30,6 @@ public class UserDto {
     @NotBlank(message = "Role is mandatory")
     private Role role;
 
+    @NotBlank(message = "Google account is mandatory")
     private boolean googleAccount;
 }

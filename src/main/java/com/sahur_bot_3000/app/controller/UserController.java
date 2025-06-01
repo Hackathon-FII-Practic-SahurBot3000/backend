@@ -26,6 +26,7 @@ public class UserController {
             User user = userService.getUserByEmail(userDetails.getUsername());
 
             UserDto userInfo = new UserDto(
+                    user.getId(),
                     user.getEmail(),
                     user.getFirstName(),
                     user.getLastName(),
