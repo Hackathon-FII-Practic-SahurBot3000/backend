@@ -37,7 +37,7 @@ public class HackathonService {
                 .hackathonState(HackathonState.Pending)
                 .startedAt(request.getStartedAt())
                 .endedAt(request.getEndedAt())
-                .prize(request.getPrize())
+                .prize(request.getPrizes())
                 .createdBy(businessUser)
                 .build();
 

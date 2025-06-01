@@ -23,6 +23,12 @@ public class HackathonCreateRequest {
     
     @NotNull(message = "End date is required")
     private Date endedAt;
-    
-    private String prize;
+
+     @NotNull(message = "End date is required")
+    private Date pendingAt;
+
+      @NotNull(message = "End date is required")
+    private Date votingAt;
+
+    private String prizes;
 } 
