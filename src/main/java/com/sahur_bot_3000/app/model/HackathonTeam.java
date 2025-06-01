@@ -19,14 +19,14 @@ public class HackathonTeam {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "hackathon_id")
-    public Hackathon hackathon;
+    private Hackathon hackathon;
 
     public String urlSubmission;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn (name="team_id")
+    @JoinColumn(name = "team_id")
     public List<TeamMember> teamMembers;
 
     public String teamName;

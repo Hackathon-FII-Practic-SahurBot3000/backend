@@ -24,22 +24,22 @@ public class HackathonScheduler {
     private final HackathonRepository hackathonRepository;
     private final AiService aiService;
 
-    @Scheduled(fixedRate = 5 * 60 * 1000) // Runs every 5 minutes
+    @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void generateDailyHackathons() {
         log.info("Starting daily hackathon generation");
-        
+
         Arrays.stream(HackathonType.values()).forEach(type -> {
             try {
                 String prompt = String.format("""
-                    Generate an interesting theme for a %s hackathon.
-                    Return only the title and an interesting description of 2-3 lines that is captivating and gives participants freedom to create something diverse and interesting, separated by `||`.
-                    Ex: "Theme Name" || "Short description"
-                    """, type.name());
+                        Generate an interesting theme for a %s hackathon.
+                        Return only the title and an interesting description of 2-3 lines that is captivating and gives participants freedom to create something diverse and interesting, separated by `||`.
+                        Ex: "Theme Name" || "Short description"
+                        """, type.name());
 
                 String response = aiService.generateResponse(prompt);
                 String[] parts = response.split("\\|\\|");
-                
+
                 if (parts.length != 2) {
                     log.error("Invalid response format for type {}: {}", type, response);
                     return;

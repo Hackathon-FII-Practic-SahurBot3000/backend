@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "hackathons")
+@Table(name = "hackathon")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

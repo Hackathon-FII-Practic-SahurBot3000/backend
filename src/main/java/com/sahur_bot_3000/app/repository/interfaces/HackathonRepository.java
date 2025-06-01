@@ -14,10 +14,11 @@ import java.util.List;
 public interface HackathonRepository extends JpaRepository<Hackathon, Long> {
     List<Hackathon> findByHackathonState(HackathonState state);
 
-    @Query("SELECT DISTINCT h FROM Hackathon h " +
-           "JOIN h.hackathonTeams ht " +
-           "JOIN ht.team t " +
-           "JOIN t.teamMembers tm " +
-           "WHERE tm.user.id = :userId")
+    @Query("""
+                SELECT DISTINCT h FROM Hackathon h
+                JOIN h.hackathonTeams ht
+                JOIN ht.teamMembers tm
+                WHERE tm.user.id = :userId
+            """)
     List<Hackathon> findByUserId(@Param("userId") Long userId);
 }

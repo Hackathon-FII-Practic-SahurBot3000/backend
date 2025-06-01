@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HackathonTeamRepository extends JpaRepository<HackathonTeam, Long> {
-    @Query("SELECT CASE WHEN COUNT(ht) > 0 THEN true ELSE false END FROM HackathonTeam ht JOIN ht.team.teamMembers tm WHERE ht.hackathon.id = :hackathonId AND tm.user.id = :userId")
-    boolean existsByHackathonIdAndUserId(Long hackathonId, Long userId);
-} 
+
+    @Query("SELECT CASE WHEN COUNT(ht) > 0 THEN true ELSE false END FROM HackathonTeam ht JOIN ht.teamMembers tm WHERE ht.hackathon.id = :hackathonId AND tm.user.id = :userId")
+boolean existsByHackathonIdAndUserId(Long hackathonId, Long userId);
+
+}
