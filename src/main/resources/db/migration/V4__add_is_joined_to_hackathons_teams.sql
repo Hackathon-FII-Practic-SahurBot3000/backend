@@ -1,0 +1,2 @@
+ALTER TABLE hackathons_teams
+ADD COLUMN is_joined BOOLEAN NOT NULL DEFAULT FALSE; 

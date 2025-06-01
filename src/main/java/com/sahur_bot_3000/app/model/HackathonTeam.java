@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,20 +22,26 @@ public class HackathonTeam {
 
     @ManyToOne
     @JoinColumn(name = "hackathon_id")
-    private Hackathon hackathon;
+    public Hackathon hackathon;
 
     public String urlSubmission;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_id")
-    public List<TeamMember> teamMembers;
+    @JoinColumn(name = "team_id", nullable = true)
+    @Builder.Default
+    public List<TeamMember> teamMembers = new ArrayList<>();
 
     public String teamName;
 
     @OneToMany(mappedBy = "voterTeam")
-    private List<Vote> votesGiven;
+    @Builder.Default
+    private List<Vote> votesGiven = new ArrayList<>();
 
     @OneToMany(mappedBy = "votedTeam")
-    private List<Vote> votesReceived;
+    @Builder.Default
+    private List<Vote> votesReceived = new ArrayList<>();
+
+    @Column(name = "is_joined", nullable = false)
+    private boolean isJoined;
 }
 

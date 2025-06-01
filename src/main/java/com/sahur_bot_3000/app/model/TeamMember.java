@@ -24,5 +24,8 @@ public class TeamMember {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     public User user;
+
+    @Column(name = "is_owner", nullable = false)
+    private boolean isOwner;
 }
 

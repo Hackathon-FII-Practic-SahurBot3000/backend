@@ -1,8 +1,9 @@
 name: Build, Push & Deploy on Release
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
 
 env:
   IMAGE_NAME: ghcr.io/hackathon-fii-practic-sahurbot3000/backend
@@ -28,19 +29,13 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract release tag
-      id: release_tag
-      run: echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
-
     - name: Build and push Docker image
       uses: docker/build-push-action@v5
       with:
         context: .
         file: ./Dockerfile
         push: true
-        tags: |
-          ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
-          ${{ env.IMAGE_NAME }}:latest
+        tags: ${{ env.IMAGE_NAME }}:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
@@ -53,14 +48,26 @@ jobs:
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
           docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
-          docker pull ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
+          docker pull ${{ env.IMAGE_NAME }}:latest
+          
+          # Create network if it doesn't exist
+          docker network create hackathon-network || true
+          
+          # Stop and remove existing backend container
           docker stop backend || true
           docker rm backend || true
+          
+          # Run backend container connected to the same network as postgres
           docker run -d \
             --name backend \
-            -e DB_URL="${{ secrets.DB_URL }}" \
+            --network hackathon-network \
+            -e DB_URL="jdbc:postgresql://postgres:5432/hackathon-fiipractic-prod" \
             -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
             -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+            -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
+            -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
+            -e FRONTEND_URL="${{ secrets.FRONTEND_URL }}" \
             -e SPRING_PROFILES_ACTIVE=prod \
             -p 8080:8080 \
-            ${{ env.IMAGE_NAME }}:${{ steps.release_tag.outputs.tag }}
+            ${{ env.IMAGE_NAME }}:latest

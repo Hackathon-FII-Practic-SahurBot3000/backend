@@ -22,3 +22,4 @@ public interface HackathonRepository extends JpaRepository<Hackathon, Long> {
             """)
     List<Hackathon> findByUserId(@Param("userId") Long userId);
 }
+ 

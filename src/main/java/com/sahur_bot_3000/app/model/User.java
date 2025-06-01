@@ -40,4 +40,8 @@ public class User {
 
     @OneToMany(mappedBy = "createdBy")
     private List<Hackathon> createdHackathons;
+    
+    public enum UserType {
+       business,admin, basic
+    }
 }
